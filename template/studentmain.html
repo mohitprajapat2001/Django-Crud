@@ -1,0 +1,254 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- BootStrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+  <!-- Favicon -->
+    <link rel="shortcut icon" href="https://img.icons8.com/color/48/null/commercial-development-management.png" type="image/x-icon">
+    <!-- <link rel="stylesheet" href="{% static 'style/student.css' %}"> -->
+  <!-- CSS -->
+    <link rel="stylesheet" href='{% static "style/student.css" %}'>
+    <title>Student Management</title>
+  </head>
+
+<body>
+  <!-- Nav Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <span class="font-weight-bold">
+            <img src="https://img.icons8.com/ios-glyphs/60/null/commercial-development-management.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            Student Management
+          </span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/mohitprajapat2001" target="_blank">Github</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+            </li>
+          </ul>
+        </div>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link disabled" href="" >Hello,{{user}}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="logout" >LogOut</a>
+            </li>
+            {% else %}
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Login </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+            {% endif %}
+            
+          </ul>
+        </div>
+      </nav>
+
+      {% include "msg.html" %}
+    <div id="msg">
+        {% block content %}{% endblock %}
+    </div>
+      <!-- Modal -->
+      {% if user.is_authenticated %}
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Student Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <form method="POST" action="studentcreate">
+          {% csrf_token %}
+      <div class="modal-body">
+        <div class="form-group">
+            <label for="exampleInputName">Enter Full Name</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="nameHelp" name="name" placeholder="Enter Full Name" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputName">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" name="email" required>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputcity">Enter City</label>
+            <input type="city" class="form-control" id="exampleInputcity" placeholder="Enter City" name="city" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPhone">Phone</label>
+            <input type="tel" class="form-control" id="exampleInputPhone" aria-describedby="phoneHelp" placeholder="Enter Phone"  name= "phone" pattern="[0-9]{10}" required>
+            <small id="phoneHelp" class="form-text text-muted">Format: 1234567890</small>
+          </div>
+          <!-- <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button> -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+        </form>
+    </div>
+  </div>
+</div>
+      <div class="container main-div border rounded border-top-0">
+        <div class="container head-div">
+          Manage <b>Students</b>
+          <span class="float-right"><button class="text-capitalize btn-danger font-weight-bold text-light bi bi-dash-circle-fill"> Delete</button>
+            <button class="text-capitalize btn-success font-weight-bold text-light bi bi-plus-circle-fill" data-toggle="modal" data-target="#exampleModal"> Add New Student</button></span>
+        </div>
+        <div class="container table-div">
+          <table class="table text-dark">
+            <thead>
+              <tr>
+                <th scope="col">Full Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">City</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in students %}
+              {% if student.istrue == True %}
+              <tr>
+                <th scope="row">{{student.name}}</th>
+                <td>{{student.email}}</td>
+                <td>{{student.city}}</td>
+                <td>{{student.phone}}</td>
+                <td><button class="bi bi-pencil-square"  data-toggle="modal" data-target="#editmodal" onclick="editstudent('{{student.name}}','{{student.email}}','{{student.city}}','{{student.phone}}', '{{student.id}}')"></button> <a class="btn bi bi-trash-fill border rounded border-dark" href="deletestudent/{{student.id}}"></a></td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+          <!-- <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+              <li class="page-item">
+                <a class="page-link" href="#">Previous</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </nav> -->
+        </div>
+    </div>
+    {% else %}
+    <div class="d-flex align-items-center justify-content-center vh-100">
+      <div class="text-center row">
+          <div class=" col-md-6">
+              <img src="https://cdn.pixabay.com/photo/2017/03/09/12/31/error-2129569__340.jpg" alt=""
+                  class="img-fluid">
+          </div>
+          <div class=" col-md-6 mt-5">
+              <p class="fs-3"> <span class="text-danger">Sorry!</span> Not Authenticated User.</p>
+              <p class="lead">
+                Please Try Login Yourself !
+              </p>
+              <a href="/" class="btn btn-primary">Login</a>
+          </div>
+
+      </div>
+  </div>
+{% endif %}
+
+
+<!-- Edit Student -->
+<div class="modal fade" id="editmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Student Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <form method="POST" action="editstudent">
+          {% csrf_token %}
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="number" class="form-control" id="studentid" aria-describedby="nameHelp" name="id" placeholder="Student id" hidden>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputName">Edit Full Name</label>
+          <input type="text" class="form-control" id="editname" aria-describedby="nameHelp" name="name" placeholder="Enter Full Name" required>
+        </div>
+          <div class="form-group">
+            <label for="exampleInputName">Edit Email address</label>
+            <input type="email" class="form-control" id="editemail" aria-describedby="emailHelp" placeholder="Enter email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputcity">Edit City</label>
+            <input type="city" class="form-control" id="editcity" placeholder="Enter City" name="city" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPhone">Edit Phone</label>
+            <input type="tel" class="form-control" id="editphone" aria-describedby="phoneHelp" placeholder="Enter Phone"  name= "phone" pattern="[0-9]{10}" required >
+            <small id="phoneHelp" class="form-text text-muted">Format: 1234567890</small>
+          </div>
+          <!-- <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button> -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit button" class="btn btn-primary">Save changes</a></button>
+      </div>
+    </div>
+        </form>
+    </div>
+  </div>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+
+   <script>
+    $(document).ready(()=>{
+      setTimeout(()=>{
+        if ($("#msg").length > 0){
+          $("#msg").remove()
+      }
+      },2000) 
+  })
+
+  function editstudent(name, email, city, phone, id){
+      $("#studentid").val(id);
+      $("#editname").val(name);
+      $("#editemail").val(email);
+      $("#editcity").val(city);
+      $("#editphone").val(phone);
+  }
+   </script>
+</html>
